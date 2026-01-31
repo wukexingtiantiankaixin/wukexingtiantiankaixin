@@ -3,412 +3,880 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>五颗星天天开心 | 视频礼物</title>
+    <title>Five Stars Everyday | 视频礼物</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* 简单但好看的样式 */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
         
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent: #06b6d4;
+            --light: #f8fafc;
+            --dark: #0f172a;
+            --gray: #64748b;
+        }
+        
         body {
-            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: #fff;
+            font-family: 'Inter', 'Segoe UI', 'PingFang SC', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: var(--light);
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+            line-height: 1.6;
+            overflow-x: hidden;
         }
         
         .container {
-            max-width: 900px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* 星星开场动画 */
+        .stars-intro {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            height: 100%;
+            background: linear-gradient(180deg, #0a0a0f 0%, #1a1a2e 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 1s ease, transform 1s ease;
+        }
+        
+        .stars-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            margin-bottom: 60px;
+        }
+        
+        .star {
+            position: absolute;
+            background: radial-gradient(circle at center, currentColor 40%, transparent 70%);
+            border-radius: 50%;
+            animation: twinkle 2s infinite;
+        }
+        
+        .star:nth-child(1) { top: 20%; left: 15%; width: 60px; height: 60px; color: #ff6b9d; animation-delay: 0s; }
+        .star:nth-child(2) { top: 40%; left: 35%; width: 80px; height: 80px; color: #a78bfa; animation-delay: 0.3s; }
+        .star:nth-child(3) { top: 15%; left: 55%; width: 100px; height: 100px; color: #60a5fa; animation-delay: 0.6s; }
+        .star:nth-child(4) { top: 50%; left: 70%; width: 70px; height: 70px; color: #34d399; animation-delay: 0.9s; }
+        .star:nth-child(5) { top: 25%; left: 85%; width: 50px; height: 50px; color: #fbbf24; animation-delay: 1.2s; }
+        
+        .intro-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, #ff6b9d, #a78bfa, #60a5fa, #34d399, #fbbf24);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 20px;
+            text-align: center;
+            letter-spacing: -0.5px;
+        }
+        
+        .intro-subtitle {
+            font-size: 1.2rem;
+            color: var(--gray);
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+        
+        .intro-countdown {
+            font-size: 1.1rem;
+            color: var(--accent);
+            margin-top: 30px;
+        }
+        
+        /* 主内容区 */
+        .main-content {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        
+        .main-content.active {
+            opacity: 1;
+            transform: translateY(0);
         }
         
         .header {
             text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        h1 {
+        .title {
             font-size: 2.8rem;
-            background: linear-gradient(90deg, #ff6b9d, #a78bfa, #60a5fa);
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
         
         .subtitle {
-            color: #a0aec0;
             font-size: 1.1rem;
+            color: var(--gray);
+            max-width: 600px;
+            margin: 0 auto;
         }
         
-        .video-container {
+        /* 视频播放器 */
+        .video-section {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.05);
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .video-wrapper {
             position: relative;
             width: 100%;
-            margin: 0 auto 30px;
-            border-radius: 15px;
-            overflow: hidden;
+            padding-bottom: 56.25%; /* 16:9 */
             background: #000;
-            min-height: 300px;
         }
         
-        video {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-        
-        .video-placeholder {
+        .video-player {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            border: none;
+            outline: none;
+        }
+        
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background: rgba(0, 0, 0, 0.8);
             color: white;
-            font-size: 1.2rem;
             z-index: 10;
+            transition: opacity 0.3s ease;
         }
         
-        .controls {
+        .play-button-large {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            border: none;
+            color: white;
+            font-size: 2.5rem;
             display: flex;
+            align-items: center;
             justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
-            flex-wrap: wrap;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+        }
+        
+        .play-button-large:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.4);
+        }
+        
+        /* 视频控制栏 */
+        .video-controls {
+            padding: 20px 30px;
+            background: rgba(15, 23, 42, 0.8);
+            display: flex;
+            align-items: center;
+            gap: 20px;
         }
         
         .control-btn {
-            background: linear-gradient(90deg, #ff6b9d, #a78bfa);
+            background: rgba(255, 255, 255, 0.1);
             border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
             color: white;
-            padding: 12px 25px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 1rem;
+            font-size: 1.2rem;
             display: flex;
             align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
         
         .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(255, 107, 157, 0.3);
         }
         
-        .control-btn.secondary {
+        .control-btn.primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.3);
+        }
+        
+        .progress-container {
+            flex: 1;
+            height: 6px;
             background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
         }
         
-        .status {
-            text-align: center;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 10px;
-            font-size: 0.95rem;
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.1s;
         }
         
-        .status.loading {
-            background: rgba(255, 193, 7, 0.1);
-            color: #ffc107;
-        }
-        
-        .status.success {
-            background: rgba(40, 167, 69, 0.1);
-            color: #28a745;
-        }
-        
-        .status.error {
-            background: rgba(220, 53, 69, 0.1);
-            color: #dc3545;
-        }
-        
-        .debug-info {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
+        .time-display {
+            font-variant-numeric: tabular-nums;
+            color: var(--gray);
             font-size: 0.9rem;
-            color: #a0aec0;
-            display: none;
+            min-width: 100px;
+            text-align: center;
         }
         
-        .debug-info.show {
-            display: block;
+        .volume-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
+        .volume-slider {
+            width: 80px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .volume-level {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 2px;
+            width: 80%;
+        }
+        
+        /* 视频信息 */
+        .video-info {
+            padding: 30px;
+            background: rgba(15, 23, 42, 0.3);
+            border-radius: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+        
+        .info-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 25px;
+            border-radius: 16px;
+            border-left: 4px solid var(--primary);
+            transition: transform 0.3s ease;
+        }
+        
+        .info-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .info-card h3 {
+            color: var(--accent);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        /* 状态指示器 */
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+        
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #22c55e;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-text {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        /* 页脚 */
+        .footer {
+            text-align: center;
+            padding: 30px 0;
+            color: var(--gray);
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            margin-top: 50px;
+        }
+        
+        /* 响应式设计 */
         @media (max-width: 768px) {
-            .container {
-                padding: 20px;
+            .intro-title {
+                font-size: 2.5rem;
             }
             
-            h1 {
+            .title {
                 font-size: 2.2rem;
             }
             
-            .controls {
-                flex-direction: column;
-                align-items: center;
+            .video-controls {
+                padding: 15px 20px;
+                flex-wrap: wrap;
+                gap: 15px;
             }
             
             .control-btn {
-                width: 100%;
-                max-width: 300px;
-                justify-content: center;
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
             }
+            
+            .time-display {
+                min-width: 80px;
+                order: 1;
+                width: 100%;
+                margin-top: 10px;
+            }
+            
+            .volume-container {
+                order: 2;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* 动画 */
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* 加载动画 */
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--dark);
+            z-index: 9999;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .loading.active {
+            display: flex;
+        }
+        
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
+    <!-- 开场动画 -->
+    <div class="stars-intro" id="starsIntro">
+        <div class="stars-container">
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+        </div>
+        
+        <h1 class="intro-title">Five Stars Everyday</h1>
+        <p class="intro-subtitle">五颗星的祝福，点亮每一天的快乐</p>
+        <p class="intro-countdown" id="countdown">进入视频播放 5秒</p>
+    </div>
+    
+    <!-- 加载提示 -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>加载视频资源中...</p>
+    </div>
+    
+    <!-- 主内容区 -->
     <div class="container">
-        <div class="header">
-            <h1>五颗星天天开心 ✨</h1>
-            <p class="subtitle">一份特别的视频礼物，用心为你准备</p>
-        </div>
-        
-        <div class="video-container">
-            <!-- 视频文件 - 注意修改文件名 -->
-            <video id="mainVideo" controls playsinline>
-                <source src="五颗星天天开心.mp4" type="video/mp4">
-            </video>
+        <div class="main-content" id="mainContent">
+            <header class="header">
+                <h1 class="title">Five Stars Everyday</h1>
+                <p class="subtitle">一份特别的视频礼物，用五颗星代表最真挚的祝福</p>
+            </header>
             
-            <div class="video-placeholder" id="videoPlaceholder">
-                <div style="font-size: 3rem; margin-bottom: 15px;">🎬</div>
-                <p>视频加载中...</p>
-                <p id="videoStatus">请稍候</p>
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                <span class="status-text" id="statusText">使用CDN加速，加载更快</span>
             </div>
-        </div>
-        
-        <div class="status loading" id="statusMessage">
-            ⏳ 正在检查视频文件...
-        </div>
-        
-        <div class="controls">
-            <button class="control-btn" id="playBtn">
-                <span>▶</span> 播放视频
-            </button>
-            <button class="control-btn secondary" id="fullscreenBtn">
-                <span>⛶</span> 全屏观看
-            </button>
-            <button class="control-btn secondary" id="debugBtn">
-                <span>🐛</span> 显示调试信息
-            </button>
-        </div>
-        
-        <div class="debug-info" id="debugInfo">
-            <h3>调试信息：</h3>
-            <p id="fileCheck">检查文件中...</p>
-            <p id="fileSize">文件大小：未知</p>
-            <p id="fileType">文件类型：未知</p>
-            <p id="directLink">直接链接：<a href="#" id="videoLink" target="_blank">点击测试</a></p>
-            <p><small>如果视频无法播放，请将以上信息发送给制作者</small></p>
+            
+            <section class="video-section">
+                <div class="video-wrapper">
+                    <!-- 使用CDN加速的视频文件 -->
+                    <video class="video-player" id="videoPlayer" preload="metadata">
+                        <!-- CDN加速链接，请替换USERNAME和REPO -->
+                        <source src="https://cdn.jsdelivr.net/gh/USERNAME/REPO/five-stars.mp4" type="video/mp4">
+                        您的浏览器不支持视频播放，请使用现代浏览器
+                    </video>
+                    
+                    <div class="video-overlay" id="videoOverlay">
+                        <button class="play-button-large" id="playButtonLarge">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <p>点击播放按钮开始观看</p>
+                    </div>
+                </div>
+                
+                <div class="video-controls">
+                    <button class="control-btn primary" id="playPauseBtn">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    
+                    <div class="progress-container" id="progressContainer">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                    
+                    <div class="time-display">
+                        <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
+                    </div>
+                    
+                    <div class="volume-container">
+                        <button class="control-btn" id="muteBtn">
+                            <i class="fas fa-volume-up"></i>
+                        </button>
+                        <div class="volume-slider" id="volumeSlider">
+                            <div class="volume-level" id="volumeLevel"></div>
+                        </div>
+                    </div>
+                    
+                    <button class="control-btn" id="fullscreenBtn">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+            </section>
+            
+            <section class="video-info">
+                <h2>关于这个视频</h2>
+                <p>这个视频被命名为"Five Stars Everyday"，代表着五颗星般的祝福，寓意着五星级的美好祝愿和快乐时光。</p>
+                
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h3><i class="fas fa-bolt"></i> CDN加速</h3>
+                        <p>视频通过全球CDN网络分发，确保快速加载和流畅播放。</p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <h3><i class="fas fa-mobile-alt"></i> NFC访问</h3>
+                        <p>用手机NFC功能扫描贴纸即可随时随地访问此页面。</p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <h3><i class="fas fa-heart"></i> 特别制作</h3>
+                        <p>视频内容经过精心编辑，包含特别的祝福和回忆。</p>
+                    </div>
+                </div>
+            </section>
+            
+            <footer class="footer">
+                <p>Five Stars Everyday | 用心制作的NFC视频礼物</p>
+                <p>扫描NFC贴纸即可重温这份快乐</p>
+                <p style="margin-top: 15px; font-size: 0.8rem; color: #475569;">
+                    视频通过jsDelivr CDN加速 | 优化加载体验
+                </p>
+            </footer>
         </div>
     </div>
     
     <script>
-        // 获取元素
-        const video = document.getElementById('mainVideo');
-        const videoPlaceholder = document.getElementById('videoPlaceholder');
-        const statusMessage = document.getElementById('statusMessage');
-        const playBtn = document.getElementById('playBtn');
-        const fullscreenBtn = document.getElementById('fullscreenBtn');
-        const debugBtn = document.getElementById('debugBtn');
-        const debugInfo = document.getElementById('debugInfo');
-        const videoStatus = document.getElementById('videoStatus');
-        const fileCheck = document.getElementById('fileCheck');
-        const fileSize = document.getElementById('fileSize');
-        const fileType = document.getElementById('fileType');
-        const videoLink = document.getElementById('videoLink');
-        
-        // 视频文件名 - 请确保这里和实际文件名一致
-        const videoFileName = '五颗星天天开心.mp4';
-        
-        // 初始化
-        async function initVideo() {
-            updateStatus('正在检查视频文件...', 'loading');
+        // 配置信息 - 重要：请修改这里
+        const CONFIG = {
+            // GitHub信息：请替换为你的GitHub用户名和仓库名
+            githubUsername: 'YOUR_GITHUB_USERNAME',  // 例如: zhangsan
+            githubRepo: 'YOUR_GITHUB_REPO',           // 例如: zhangsan.github.io
             
-            try {
-                // 检查视频文件是否存在
-                const response = await fetch(videoFileName, { method: 'HEAD' });
-                
-                if (response.ok) {
-                    // 文件存在
-                    const size = response.headers.get('content-length');
-                    const sizeMB = size ? (size / (1024 * 1024)).toFixed(2) + ' MB' : '未知';
-                    
-                    updateStatus(`✅ 视频文件加载成功 (${sizeMB})`, 'success');
-                    updateDebugInfo('success', sizeMB);
-                    
-                    // 设置直接链接
-                    videoLink.href = videoFileName;
-                    videoLink.textContent = window.location.origin + '/' + videoFileName;
-                    
-                    // 加载视频
-                    video.src = videoFileName;
-                    video.load();
-                    
-                    // 尝试自动播放
-                    video.muted = true; // 先静音确保能自动播放
-                    video.play().then(() => {
-                        videoPlaceholder.style.display = 'none';
-                        playBtn.innerHTML = '<span>⏸</span> 暂停视频';
-                        video.muted = false;
-                    }).catch(error => {
-                        updateStatus('点击播放按钮开始观看', 'loading');
-                        videoPlaceholder.style.display = 'flex';
-                        videoStatus.textContent = '点击播放按钮开始';
-                    });
-                    
-                } else {
-                    // 文件不存在
-                    updateStatus('❌ 视频文件不存在 (404错误)', 'error');
-                    updateDebugInfo('error');
-                    videoPlaceholder.style.display = 'flex';
-                    videoStatus.textContent = '视频文件未找到';
-                }
-                
-            } catch (error) {
-                // 网络错误
-                updateStatus('❌ 网络错误，无法加载视频', 'error');
-                updateDebugInfo('network');
-                console.error('视频加载错误:', error);
-            }
-        }
+            // 视频文件名（英文，无空格）
+            videoFilename: 'five-stars.mp4',
+            
+            // CDN提供商（jsDelivr或GitHub原始链接）
+            cdnProvider: 'jsdelivr', // 可选: 'jsdelivr' 或 'github'
+            
+            // 开场动画时长（秒）
+            introDuration: 5
+        };
         
-        // 更新状态信息
-        function updateStatus(message, type) {
-            statusMessage.textContent = message;
-            statusMessage.className = `status ${type}`;
-        }
-        
-        // 更新调试信息
-        function updateDebugInfo(status, size = '未知') {
-            if (status === 'success') {
-                fileCheck.innerHTML = '✅ 文件存在';
-                fileSize.textContent = `文件大小：${size}`;
-                fileType.textContent = '文件类型：MP4';
-            } else if (status === 'error') {
-                fileCheck.innerHTML = '❌ 文件不存在 (404)';
-                fileSize.textContent = '文件大小：未知';
-                fileType.textContent = '请检查文件名是否正确';
+        // 计算CDN链接
+        function getVideoUrl() {
+            if (CONFIG.cdnProvider === 'jsdelivr') {
+                return `https://cdn.jsdelivr.net/gh/${CONFIG.githubUsername}/${CONFIG.githubRepo}/${CONFIG.videoFilename}`;
             } else {
-                fileCheck.innerHTML = '⚠️ 网络错误';
-                fileSize.textContent = '文件大小：未知';
-                fileType.textContent = '请检查网络连接';
+                return `https://${CONFIG.githubUsername}.github.io/${CONFIG.videoFilename}`;
             }
         }
         
-        // 播放/暂停控制
-        function togglePlay() {
-            if (video.paused) {
-                video.play().then(() => {
-                    videoPlaceholder.style.display = 'none';
-                    playBtn.innerHTML = '<span>⏸</span> 暂停视频';
-                }).catch(error => {
-                    alert('播放失败，请确保视频文件正确');
-                });
+        // DOM元素
+        const starsIntro = document.getElementById('starsIntro');
+        const mainContent = document.getElementById('mainContent');
+        const loading = document.getElementById('loading');
+        const videoPlayer = document.getElementById('videoPlayer');
+        const videoOverlay = document.getElementById('videoOverlay');
+        const playButtonLarge = document.getElementById('playButtonLarge');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const muteBtn = document.getElementById('muteBtn');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBar = document.getElementById('progressBar');
+        const currentTimeEl = document.getElementById('currentTime');
+        const durationEl = document.getElementById('duration');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const volumeLevel = document.getElementById('volumeLevel');
+        const statusText = document.getElementById('statusText');
+        const countdownEl = document.getElementById('countdown');
+        
+        // 状态变量
+        let isPlaying = false;
+        let isMuted = false;
+        let currentVolume = 0.8;
+        let countdownTimer;
+        
+        // 格式化时间（秒 -> MM:SS）
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+        
+        // 更新进度条
+        function updateProgress() {
+            if (!videoPlayer.duration) return;
+            
+            const progress = (videoPlayer.currentTime / videoPlayer.duration) * 100;
+            progressBar.style.width = `${progress}%`;
+            
+            currentTimeEl.textContent = formatTime(videoPlayer.currentTime);
+            durationEl.textContent = formatTime(videoPlayer.duration);
+        }
+        
+        // 切换播放/暂停
+        function togglePlayPause() {
+            if (videoPlayer.paused || videoPlayer.ended) {
+                videoPlayer.play();
+                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                playButtonLarge.innerHTML = '<i class="fas fa-pause"></i>';
+                isPlaying = true;
+                videoOverlay.style.opacity = '0';
+                setTimeout(() => {
+                    videoOverlay.style.display = 'none';
+                }, 300);
             } else {
-                video.pause();
-                playBtn.innerHTML = '<span>▶</span> 播放视频';
+                videoPlayer.pause();
+                playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                playButtonLarge.innerHTML = '<i class="fas fa-play"></i>';
+                isPlaying = false;
             }
         }
         
-        // 全屏控制
+        // 切换静音
+        function toggleMute() {
+            isMuted = !isMuted;
+            videoPlayer.muted = isMuted;
+            muteBtn.innerHTML = isMuted ? 
+                '<i class="fas fa-volume-mute"></i>' : 
+                '<i class="fas fa-volume-up"></i>';
+        }
+        
+        // 设置音量
+        function setVolume(e) {
+            const rect = volumeSlider.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const width = rect.width;
+            
+            let volume = clickX / width;
+            volume = Math.max(0, Math.min(1, volume));
+            
+            currentVolume = volume;
+            videoPlayer.volume = volume;
+            volumeLevel.style.width = `${volume * 100}%`;
+            
+            // 如果音量设为0，自动静音
+            if (volume === 0 && !isMuted) {
+                toggleMute();
+            } else if (volume > 0 && isMuted) {
+                toggleMute();
+            }
+        }
+        
+        // 设置进度
+        function setProgress(e) {
+            const rect = progressContainer.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const width = rect.width;
+            
+            const time = (clickX / width) * videoPlayer.duration;
+            videoPlayer.currentTime = time;
+        }
+        
+        // 切换全屏
         function toggleFullscreen() {
             if (!document.fullscreenElement) {
-                if (video.requestFullscreen) {
-                    video.requestFullscreen();
-                } else if (video.webkitRequestFullscreen) {
-                    video.webkitRequestFullscreen();
+                const videoWrapper = document.querySelector('.video-wrapper');
+                if (videoWrapper.requestFullscreen) {
+                    videoWrapper.requestFullscreen();
+                } else if (videoWrapper.webkitRequestFullscreen) {
+                    videoWrapper.webkitRequestFullscreen();
                 }
+                fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
             } else {
                 if (document.exitFullscreen) {
                     document.exitFullscreen();
                 } else if (document.webkitExitFullscreen) {
                     document.webkitExitFullscreen();
                 }
+                fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
             }
         }
         
-        // 视频事件监听
-        video.addEventListener('loadeddata', function() {
-            console.log('✅ 视频数据已加载');
-            updateStatus('✅ 视频加载完成，可以播放', 'success');
+        // 开始开场倒计时
+        function startCountdown() {
+            let timeLeft = CONFIG.introDuration;
+            
+            countdownTimer = setInterval(() => {
+                countdownEl.textContent = `进入视频播放 ${timeLeft}秒`;
+                timeLeft--;
+                
+                if (timeLeft < 0) {
+                    clearInterval(countdownTimer);
+                    skipIntro();
+                }
+            }, 1000);
+        }
+        
+        // 跳过开场动画
+        function skipIntro() {
+            clearInterval(countdownTimer);
+            
+            starsIntro.style.opacity = '0';
+            starsIntro.style.transform = 'scale(1.1)';
+            
+            setTimeout(() => {
+                starsIntro.style.display = 'none';
+                mainContent.classList.add('active');
+                loadVideo();
+            }, 1000);
+        }
+        
+        // 加载视频
+        async function loadVideo() {
+            loading.classList.add('active');
+            statusText.textContent = '正在通过CDN加载视频...';
+            
+            // 设置视频源
+            const videoUrl = getVideoUrl();
+            videoPlayer.src = videoUrl;
+            
+            // 预加载视频
+            videoPlayer.load();
+            
+            // 检查视频是否可访问
+            try {
+                const response = await fetch(videoUrl, { method: 'HEAD' });
+                
+                if (response.ok) {
+                    const size = response.headers.get('content-length');
+                    const sizeMB = size ? (size / (1024 * 1024)).toFixed(1) : '未知';
+                    
+                    statusText.textContent = `CDN加速已启用，视频大小: ${sizeMB}MB`;
+                    
+                    // 尝试自动播放（移动端需要静音）
+                    videoPlayer.muted = true;
+                    videoPlayer.play().then(() => {
+                        videoPlayer.pause();
+                        videoPlayer.currentTime = 0;
+                        videoPlayer.muted = false;
+                        loading.classList.remove('active');
+                    }).catch(error => {
+                        loading.classList.remove('active');
+                        console.log('预加载成功，等待用户交互');
+                    });
+                } else {
+                    statusText.textContent = 'CDN视频加载失败，尝试备用源...';
+                    tryFallbackSource();
+                }
+            } catch (error) {
+                console.error('CDN访问错误:', error);
+                tryFallbackSource();
+            }
+        }
+        
+        // 尝试备用源
+        function tryFallbackSource() {
+            const fallbackUrl = `https://${CONFIG.githubUsername}.github.io/${CONFIG.videoFilename}`;
+            
+            statusText.textContent = '尝试GitHub原始链接...';
+            videoPlayer.src = fallbackUrl;
+            videoPlayer.load();
+            
+            setTimeout(() => {
+                loading.classList.remove('active');
+                statusText.textContent = '视频已加载，点击播放按钮开始';
+            }, 2000);
+        }
+        
+        // 更新音量显示
+        function initVolume() {
+            videoPlayer.volume = currentVolume;
+            volumeLevel.style.width = `${currentVolume * 100}%`;
+        }
+        
+        // 事件监听
+        playButtonLarge.addEventListener('click', togglePlayPause);
+        playPauseBtn.addEventListener('click', togglePlayPause);
+        muteBtn.addEventListener('click', toggleMute);
+        fullscreenBtn.addEventListener('click', toggleFullscreen);
+        
+        videoPlayer.addEventListener('click', togglePlayPause);
+        videoPlayer.addEventListener('timeupdate', updateProgress);
+        videoPlayer.addEventListener('loadedmetadata', () => {
+            durationEl.textContent = formatTime(videoPlayer.duration);
+            initVolume();
         });
         
-        video.addEventListener('error', function(e) {
-            console.error('视频错误:', video.error);
-            
-            let errorMsg = '视频加载失败: ';
-            switch(video.error.code) {
-                   < !DOCTYPE html   超文本标记语言>case 1:
-                    errorMsg += '用户取消了播放';
-                    break;
-                case 2:
-                    errorMsg += '网络错误';
-                    break;
-                case 3:
-                    errorMsg += '视频解码错误（可能是格式问题）';
-                    break;
-                case 4:
-                    errorMsg += '视频格式不支持';
-                    break;
-                default:
-                    errorMsg += '未知错误';
+        volumeSlider.addEventListener('click', setVolume);
+        progressContainer.addEventListener('click', setProgress);progressContainer .addEventListener——setProgress无限点击”;
+        
+        // 监听全屏变化
+        document.addEventListener('fullscreenchange', () => {文档。addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement) {如果(!文档。fullscreenElement) {
+                fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>''<i class="fas fa-expand"></i>';
+            }
+        });
+        
+        // 键盘快捷键
+        document.addEventListener('keydown', (e) => {文档。addEventListener('keydown', (e) => {
+            // 空格键播放/暂停
+            if (e.code === 'Space') {
+                e.preventDefault();
+                togglePlayPause();
             }
             
-            updateStatus(`❌ ${errorMsg}`, 'error');
-            videoPlaceholder.style.display = 'flex';
-            videoStatus.textContent = errorMsg;
-        });
-        
-        video.addEventListener('playing', function() {
-            videoPlaceholder.style.display = 'none';
-            playBtn.innerHTML = '<span>⏸</span> 暂停视频';
-        });
-        
-        video.addEventListener('pause', function() {视频。addEventListener('pause'   “暂停”, function   函数() {
-            playBtn.innerHTML = '<span>▶</span> 播放视频';
-        });
-        
-        // 按钮事件
-        playBtn.addEventListener('click', togglePlay);
-        fullscreenBtn.addEventListener('click', toggleFullscreen);
-        debugBtn.addEventListener('click', function() {
-            debugInfo.classList.toggle('show');
+            // M键静音
+            if (e.code === 'KeyM') {
+                toggleMute();
+            }
+               < !DOCTYPE    文档类型html>
+            // F键全屏
+            if (e.code === 'KeyF') {
+                toggleFullscreen();
+            }
+            
+            // 左右箭头快进/快退
+            if (e.code === 'ArrowLeft') {
+                videoPlayer.currentTime -= 5;
+            }
+            if (e.code === 'ArrowRight') {
+                videoPlayer.currentTime += 5;videoPlayer   放像机.currentTime  = 5;
+            }
         });
         
         // 页面加载完成后初始化
-        window.addEventListener('load', function() {窗口。addEventListener('load'   “负载”, function   函数() {
-            console.log('页面加载完成，开始初始化视频...');
-            initVideo();
+        window.addEventListener('load', () => {
+            console.log('页面加载完成，开始开场动画...');
+            startCountdown();
             
-            // 如果10秒后还在加载，显示提示
-            setTimeout(() => {   setTimeout(() => {
-                if (video.readyState === 0) {
-                    updateStatus('⏳ 视频加载时间较长，请耐心等待...', 'loading');
-                }
-            }, 10000);
+            // 点击跳过开场
+            starsIntro.addEventListener('click', skipIntro);
+            
+            // 显示配置提醒
+            if (CONFIG.githubUsername === 'YOUR_GITHUB_USERNAME') {
+                alert('⚠️ 请先修改CONFIG中的GitHub用户名和仓库名！\n\n找到代码中的CONFIG对象，修改githubUsername和githubRepo为你的信息。');
+            }
+        });
+        
+        // 视频错误处理
+        videoPlayer.addEventListener('error', () => {
+            console.error('视频错误:', videoPlayer.error);
+            statusText.textContent = '视频加载失败，请检查网络或联系制作者';
+            loading.classList.remove('active');
+            videoOverlay.style.display = 'flex';
+            videoOverlay.innerHTML = `
+                <div style="text-align: center; padding: 30px;">
+                    <div style="font-size: 3rem; margin-bottom: 20px;">⚠️</div>
+                    <h3>视频加载失败</h3>
+                    <p>请检查：</p>
+                    <p>1. GitHub用户名和仓库名是否正确</p>
+                    <p>2. 视频文件是否上传为: ${CONFIG.videoFilename}</p>
+                    <p>3. 网络连接是否正常</p>
+                    <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer;">
+                        重新加载
+                    </button>
+                </div>   < / div>
+            `;
         });
     </script>   < / script>
-</body>   < / body>
-</html>   < / html>
+</body>   < / body>   “身体”“身体”
+</   & lt;html>   < / html>
