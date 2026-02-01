@@ -24,6 +24,14 @@
             overflow-x: hidden;
             line-height: 1.8;
             letter-spacing: 0.5px;
+            overflow-y: scroll;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* 防止移动端橡皮筋效果 */
+        body, html {
+            height: 100%;
+            overflow: auto;
         }
         
         /* 星空背景 */
@@ -53,9 +61,10 @@
             z-index: 1;
         }
         
-        /* 章节通用样式 - 修复了滑动问题 */
+        /* 章节通用样式 */
         .chapter {
             min-height: 100vh;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -282,7 +291,7 @@
             letter-spacing: 3px;
         }
         
-        /* 导航指示器 - 修复了点击跳转 */
+        /* 导航指示器 */
         .chapter-indicator {
             position: fixed;
             right: 30px;
@@ -324,7 +333,7 @@
             white-space: nowrap;
         }
         
-        /* 滚动提示 - 修复了点击事件 */
+        /* 滚动提示 */
         .scroll-hint {
             position: fixed;
             bottom: 30px;
@@ -496,7 +505,7 @@
             }
             
             .chapter-indicator {
-                display: none; /* 在小屏幕上隐藏指示器 */
+                display: none;
             }
         }
     </style>
@@ -658,27 +667,6 @@
     </div>
     
     <script>
-        // 修复滑动问题 - 使用IntersectionObserver检测章节
-        document.addEventListener('DOMContentLoaded', function() {
-            // 创建星空背景
-            createStarfield();
-            
-            // 初始化章节观察器
-            initChapterObserver();
-            
-            // 初始化导航指示器
-            initIndicatorNavigation();
-            
-            // 初始化滚动提示
-            initScrollHint();
-            
-            // 初始化烟花效果
-            initFireworks();
-            
-            // 初始化祝福语动画
-            initWishAnimation();
-        });
-        
         // 创建星空背景
         function createStarfield() {
             const starField = document.getElementById('starField');
@@ -707,149 +695,215 @@
             }
         }
         
-        // 初始化章节观察器 - 修复了滑动检测
-        function initChapterObserver() {
+        // 更可靠的章节滚动检测
+        function initChapterScroll() {
             const chapters = document.querySelectorAll('.chapter');
             const indicators = document.querySelectorAll('.indicator-dot');
             const scrollHint = document.getElementById('scrollHint');
             
-            const observerOptions = {
-                root: null,
-                rootMargin: '0px',
-                threshold: 0.5
-            };
-            
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        // 获取当前章节编号
-                        const chapterId = entry.target.id;
-                        const chapterNum = parseInt(chapterId.replace('chapter', ''));
-                        
-                        // 移除所有章节的active类
-                        chapters.forEach(chapter => {
-                            chapter.classList.remove('active');
-                        });
-                        
-                        // 为当前章节添加active类
-                        entry.target.classList.add('active');
-                        
-                        // 更新指示器
-                        indicators.forEach((dot, index) => {
-                            if (index + 1 === chapterNum) {
-                                dot.classList.add('active');
-                            } else {
-                                dot.classList.remove('active');
-                            }
-                        });
-                        
-                        // 当到达最后一章时隐藏滚动提示
-                        if (chapterNum === 5) {
-                            scrollHint.style.opacity = '0';
-                            scrollHint.style.pointerEvents = 'none';
-                        } else {
-                            scrollHint.style.opacity = '1';
-                            scrollHint.style.pointerEvents = 'all';
-                        }
-                    }
-                });
-            }, observerOptions);
-            
-            // 观察所有章节
-            chapters.forEach(chapter => {
-                observer.observe(chapter);
-            });
-        }
-        
-        // 初始化导航指示器点击事件
-        function initIndicatorNavigation() {
-            const indicators = document.querySelectorAll('.indicator-dot');
-            
-            indicators.forEach((dot, index) => {
-                dot.addEventListener('click', () => {
-                    const chapterId = `chapter${index + 1}`;
-                    const chapterElement = document.getElementById(chapterId);
-                    
-                    if (chapterElement) {
-                        // 平滑滚动到章节
-                        chapterElement.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'center'
-                        });
-                        
-                        // 更新指示器状态
-                        indicators.forEach(d => d.classList.remove('active'));
-                        dot.classList.add('active');
-                    }
-                });
-            });
-        }
-        
-        // 初始化滚动提示
-        function initScrollHint() {
-            const scrollHint = document.getElementById('scrollHint');
-            
-            scrollHint.addEventListener('click', () => {
-                // 找到当前活跃章节
-                const activeChapter = document.querySelector('.chapter.active');
-                if (!activeChapter) return;
-                
-                // 找到下一个章节
-                const currentId = activeChapter.id;
-                const currentNum = parseInt(currentId.replace('chapter', ''));
-                const nextNum = currentNum < 5 ? currentNum + 1 : 1;
-                const nextChapter = document.getElementById(`chapter${nextNum}`);
-                
-                if (nextChapter) {
-                    nextChapter.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'center'
-                    });
-                }
-            });
-            
-            // 添加鼠标滚轮事件
+            let currentChapter = 0;
             let isScrolling = false;
+            
+            // 更新活动章节
+            function updateActiveChapter(index) {
+                // 移除所有章节的active类
+                chapters.forEach(chapter => {
+                    chapter.classList.remove('active');
+                });
+                
+                // 添加当前章节的active类
+                if (chapters[index]) {
+                    chapters[index].classList.add('active');
+                }
+                
+                // 更新指示器
+                indicators.forEach((dot, i) => {
+                    if (i === index) {
+                        dot.classList.add('active');
+                    } else {
+                        dot.classList.remove('active');
+                    }
+                });
+                
+                // 更新当前章节索引
+                currentChapter = index;
+                
+                // 如果是最后一章，隐藏滚动提示
+                if (index === chapters.length - 1) {
+                    scrollHint.style.opacity = '0';
+                    scrollHint.style.pointerEvents = 'none';
+                } else {
+                    scrollHint.style.opacity = '1';
+                    scrollHint.style.pointerEvents = 'all';
+                }
+            }
+            
+            // 滚动到指定章节
+            function scrollToChapter(index) {
+                if (index < 0 || index >= chapters.length) return;
+                
+                chapters[index].scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+                
+                updateActiveChapter(index);
+            }
+            
+            // 鼠标滚轮事件
+            let wheelTimeout;
             window.addEventListener('wheel', (e) => {
+                clearTimeout(wheelTimeout);
+                
+                wheelTimeout = setTimeout(() => {
+                    if (isScrolling) return;
+                    
+                    if (e.deltaY > 0 && currentChapter < chapters.length - 1) {
+                        // 向下滚动
+                        isScrolling = true;
+                        scrollToChapter(currentChapter + 1);
+                        
+                        setTimeout(() => {
+                            isScrolling = false;
+                        }, 800);
+                    } else if (e.deltaY < 0 && currentChapter > 0) {
+                        // 向上滚动
+                        isScrolling = true;
+                        scrollToChapter(currentChapter - 1);
+                        
+                        setTimeout(() => {
+                            isScrolling = false;
+                        }, 800);
+                    }
+                }, 100);
+            });
+            
+            // 触摸滑动事件（移动端）
+            let touchStartY = 0;
+            let touchEndY = 0;
+            
+            document.addEventListener('touchstart', (e) => {
+                touchStartY = e.changedTouches[0].screenY;
+            });
+            
+            document.addEventListener('touchend', (e) => {
                 if (isScrolling) return;
                 
+                touchEndY = e.changedTouches[0].screenY;
+                const touchDiff = touchStartY - touchEndY;
+                
+                // 滑动距离大于50px才触发
+                if (Math.abs(touchDiff) > 50) {
+                    isScrolling = true;
+                    
+                    if (touchDiff > 0 && currentChapter < chapters.length - 1) {
+                        // 向下滑动
+                        scrollToChapter(currentChapter + 1);
+                    } else if (touchDiff < 0 && currentChapter > 0) {
+                        // 向上滑动
+                        scrollToChapter(currentChapter - 1);
+                    }
+                    
+                    setTimeout(() => {
+                        isScrolling = false;
+                    }, 800);
+                }
+            });
+            
+            // 导航指示器点击事件
+            indicators.forEach((dot, index) => {
+                dot.addEventListener('click', () => {
+                    if (isScrolling) return;
+                    
+                    isScrolling = true;
+                    scrollToChapter(index);
+                    
+                    setTimeout(() => {
+                        isScrolling = false;
+                    }, 800);
+                });
+            });
+            
+            // 滚动提示点击事件
+            scrollHint.addEventListener('click', () => {
+                if (isScrolling || currentChapter >= chapters.length - 1) return;
+                
                 isScrolling = true;
+                scrollToChapter(currentChapter + 1);
                 
-                // 找到当前活跃章节
-                const activeChapter = document.querySelector('.chapter.active');
-                if (!activeChapter) return;
-                
-                const currentId = activeChapter.id;
-                const currentNum = parseInt(currentId.replace('chapter', ''));
-                
-                let nextNum;
-                if (e.deltaY > 0) {
-                    // 向下滚动，前往下一章
-                    nextNum = currentNum < 5 ? currentNum + 1 : 5;
-                } else {
-                    // 向上滚动，前往上一章
-                    nextNum = currentNum > 1 ? currentNum - 1 : 1;
-                }
-                
-                const nextChapter = document.getElementById(`chapter${nextNum}`);
-                
-                if (nextChapter) {
-                    nextChapter.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'center'
-                    });
-                }
-                
-                // 防止过快滚动
                 setTimeout(() => {
                     isScrolling = false;
                 }, 800);
+            });
+            
+            // 键盘事件
+            document.addEventListener('keydown', (e) => {
+                if (isScrolling) return;
+                
+                if (e.key === 'ArrowDown' || e.key === ' ' || e.key === 'PageDown') {
+                    e.preventDefault();
+                    
+                    if (currentChapter < chapters.length - 1) {
+                        isScrolling = true;
+                        scrollToChapter(currentChapter + 1);
+                        
+                        setTimeout(() => {
+                            isScrolling = false;
+                        }, 800);
+                    }
+                } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+                    e.preventDefault();
+                    
+                    if (currentChapter > 0) {
+                        isScrolling = true;
+                        scrollToChapter(currentChapter - 1);
+                        
+                        setTimeout(() => {
+                            isScrolling = false;
+                        }, 800);
+                    }
+                } else if (e.key >= '1' && e.key <= '5') {
+                    const index = parseInt(e.key) - 1;
+                    
+                    if (index < chapters.length) {
+                        isScrolling = true;
+                        scrollToChapter(index);
+                        
+                        setTimeout(() => {
+                            isScrolling = false;
+                        }, 800);
+                    }
+                }
+            });
+            
+            // 初始化激活第一个章节
+            updateActiveChapter(0);
+            
+            // 章节进入视口检测（备用方案）
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const chapterId = entry.target.id;
+                        const chapterNum = parseInt(chapterId.replace('chapter', '')) - 1;
+                        
+                        if (chapterNum >= 0 && chapterNum !== currentChapter) {
+                            updateActiveChapter(chapterNum);
+                        }
+                    }
+                });
+            }, {
+                threshold: 0.5
+            });
+            
+            chapters.forEach(chapter => {
+                observer.observe(chapter);
             });
         }
         
         // 初始化烟花效果
         function initFireworks() {
             const container = document.getElementById('fireworksContainer');
+            if (!container) return;
             
             // 创建烟花
             function createFirework() {
@@ -890,7 +944,7 @@
             }
             
             // 每隔一段时间创建烟花
-            setInterval(createFirework, 300);
+            const fireworksInterval = setInterval(createFirework, 300);
             
             // 初始创建一些烟花
             for (let i = 0; i < 20; i++) {
@@ -898,18 +952,24 @@
                     createFirework();
                 }, i * 150);
             }
+            
+            // 清理函数
+            return () => clearInterval(fireworksInterval);
         }
         
         // 初始化祝福语动画
-           < !DOCTYPE    文档类型html>function   函数 initWishAnimation() {
-            const   常量 wishLines = document   文档.querySelectorAll('.wish-line');
+        function initWishAnimation() {
+            const wishLines = document.querySelectorAll('.wish-line');
             
             // 监听第三章进入视口
+            const chapter3 = document.getElementById('chapter3');
+            if (!chapter3) return;
+            
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         // 章节进入视口后，逐个显示祝福语
-                        wishLines.forEach((line, index) => {
+                           < !DOCTYPE html   超文本标记语言>wishLines.forEach((line, index   指数) => {
                             setTimeout(() => {
                                 line.classList.add('active');
                             }, index * 500);
@@ -920,36 +980,44 @@
                     }
                 });
             }, {
-                threshold: 0.5
+                threshold: 0.5   阈值:0.5
             });
             
-            // 观察第三章
-            const chapter3 = document.getElementById('chapter3');
-            if (chapter3) {
-                observer.observe(chapter3);
-            }
+            observer.observe(chapter3);
         }
         
-        // 添加键盘导航
-        document.addEventListener('keydown', (e) => {文档。addEventListener('keydown'   “keydown”, (e) => {
-            if (e.key === 'ArrowDown' || e.key === ' ') {
-                e.preventDefault();
-                document.getElementById('scrollHint').click();
-            }
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('页面加载完成，开始初始化...');
             
-            // 数字键1-5跳转到对应章节
-            if (e.key >= '1' && e.key <= '5') {
-                const chapterId = `chapter${e.key}`;
-                const chapterElement = document.getElementById(chapterId);
-                
-                if (chapterElement) {
-                    chapterElement.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'center'
-                    });
+            // 创建星空背景
+            createStarfield();
+            
+            // 初始化章节滚动
+            initChapterScroll();
+            
+            // 初始化烟花效果
+            const cleanupFireworks = initFireworks();
+            
+            // 初始化祝福语动画
+            initWishAnimation();
+            
+            // 页面可见性变化时重新初始化
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden) {
+                    // 页面重新变为可见时，重新初始化烟花
+                    if (cleanupFireworks) cleanupFireworks();
+                    initFireworks();
                 }
-            }
+            });
         });
+        
+        // 防止重复加载
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            setTimeout(init, 100);
+        }
     </script>   < / script>
 </body>   < / body>
 </html>   < / html>
