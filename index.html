@@ -6,816 +6,203 @@
     <title>五颗星的祝福</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
-            background: #0a0a2a;
-            color: #ffffff;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-        
-        /* 星空背景 */
-        #starsCanvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -2;
-        }
-        
-        /* 星云效果 */
-        .nebula {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            opacity: 0.6;
-            pointer-events: none;
-        }
-        
-        .nebula-1 {
-            background: radial-gradient(circle at 20% 30%, rgba(120, 80, 255, 0.3) 0%, transparent 50%);
-        }
-        
-        .nebula-2 {
-            background: radial-gradient(circle at 80% 70%, rgba(255, 100, 150, 0.2) 0%, transparent 50%);
-        }
-        
-        .nebula-3 {
-            background: radial-gradient(circle at 50% 50%, rgba(0, 200, 255, 0.1) 0%, transparent 60%);
-        }
-        
-        /* 烟花Canvas */
-        #fireworksCanvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-        }
-        
-        /* 主容器 */
-        .main-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 40px 20px;
-            position: relative;
-            z-index: 1;
-        }
-        
-        /* 标题区域 */
-        .header {
-            text-align: center;
-            margin-bottom: 60px;
-            padding: 40px 20px;
-            position: relative;
-        }
-        
-        .main-title {
-            font-size: 4.5rem;
-            margin-bottom: 20px;
-            color: #ffd166;
-            font-weight: 800;
-            text-shadow: 
-                0 0 15px rgba(255, 209, 102, 0.8),
-                0 0 30px rgba(255, 209, 102, 0.4),
-                0 0 45px rgba(255, 209, 102, 0.2);
-            letter-spacing: 3px;
-            background: linear-gradient(45deg, #ffd166, #ff9a00, #ffd166);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-size: 200% auto;
-            animation: gradientText 3s ease-in-out infinite;
-        }
-        
-        @keyframes gradientText {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-        
-        .subtitle {
-            font-size: 2.2rem;
-            color: #b0c4de;
-            font-weight: 300;
-            letter-spacing: 2px;
-            margin-bottom: 30px;
-        }
-        
-        /* 五颗星祝福区域 */
-        .stars-section {
-            margin: 80px 0;
-            padding: 60px 40px;
-            background: linear-gradient(135deg, rgba(0, 20, 50, 0.3), rgba(0, 40, 80, 0.3));
-            border-radius: 30px;
-            border: 2px solid rgba(255, 209, 102, 0.2);
-            backdrop-filter: blur(15px);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-            text-align: center;
-        }
-        
-        .section-title {
-            font-size: 3.2rem;
-            color: #ffd166;
-            margin-bottom: 50px;
-            font-weight: 700;
-            text-shadow: 0 0 10px rgba(255, 209, 102, 0.5);
-        }
-        
-        /* 五角星容器 */
-        .stars-container {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 60px;
-            margin: 60px 0;
-        }
-        
-        .star-item {
-            position: relative;
-            width: 180px;
-            height: 180px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.5s ease;
-        }
-        
-        .star-icon {
-            font-size: 80px;
-            color: #ffd166;
-            filter: drop-shadow(0 0 15px currentColor);
-            margin-bottom: 20px;
-            transition: all 0.5s ease;
-            animation: starPulse 3s ease-in-out infinite;
-        }
-        
-        @keyframes starPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-        
-        .star-name {
-            font-size: 1.8rem;
-            color: #ffd166;
-            font-weight: 600;
-            margin-bottom: 10px;
-            text-shadow: 0 0 5px rgba(255, 209, 102, 0.5);
-        }
-        
-        .star-blessing {
-            font-size: 1.3rem;
-            color: #e6f7ff;
-            line-height: 1.5;
-            max-width: 160px;
-        }
-        
-        /* 祝福卡片区域 */
-        .blessings-section {
-            margin: 80px 0;
-        }
-        
-        .blessing-card {
-            background: linear-gradient(135deg, rgba(0, 20, 50, 0.4), rgba(0, 40, 80, 0.4));
-            border: 2px solid rgba(255, 209, 102, 0.2);
-            border-radius: 25px;
-            padding: 50px;
-            margin: 40px 0;
-            backdrop-filter: blur(15px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-            transition: all 0.5s ease;
-        }
-        
-        .blessing-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-        }
-        
-        .card-title {
-            font-size: 2.5rem;
-            color: #ffd166;
-            margin-bottom: 30px;
-            font-weight: 600;
-            text-align: center;
-        }
-        
-        .card-content {
-            font-size: 1.6rem;
-            line-height: 2;
-            color: #e6f7ff;
-            text-align: center;
-        }
-        
-        .highlight {
-            color: #ffd166;
-            font-weight: 600;
-            font-size: 1.8rem;
-            text-shadow: 0 0 10px rgba(255, 209, 102, 0.5);
-        }
-        
-        /* 最终祝福区域 */
-        .final-section {
-            margin: 100px 0;
-            padding: 80px 40px;
-            text-align: center;
-            position: relative;
-        }
-        
-        .final-title {
-            font-size: 3.5rem;
-            color: #ffd166;
-            margin-bottom: 40px;
-            font-weight: 700;
-            text-shadow: 0 0 15px rgba(255, 209, 102, 0.5);
-        }
-        
-        .final-message {
-            font-size: 2.2rem;
-            color: #ffd166;
-            line-height: 1.8;
-            max-width: 900px;
-            margin: 0 auto 50px;
-            padding: 40px;
-            border-radius: 30px;
-            background: linear-gradient(135deg, rgba(0, 20, 50, 0.5), rgba(0, 40, 80, 0.5));
-            border: 2px solid rgba(255, 209, 102, 0.3);
-            backdrop-filter: blur(15px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-        }
-        
-        .signature {
-            font-size: 1.8rem;
-            color: #b0c4de;
-            font-style: italic;
-            margin-top: 50px;
-        }
-        
-        /* 响应式设计 */
-        @media (max-width: 992px) {
-            .main-title {
-                font-size: 3.5rem;
-            }
-            
-            .subtitle {
-                font-size: 1.8rem;
-            }
-            
-            .section-title {
-                font-size: 2.8rem;
-            }
-            
-            .stars-container {
-                gap: 40px;
-            }
-            
-            .star-item {
-                width: 150px;
-                height: 150px;
-            }
-            
-            .star-icon {
-                font-size: 60px;
-            }
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; background: #0a0a2a; color: #fff; }
+        #starsCanvas, #fireworksCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 30px 20px; position: relative; z-index: 1; }
+        .header { text-align: center; margin-bottom: 50px; padding: 30px 20px; }
+        .title { font-size: 3.5rem; color: #ffd166; font-weight: 800; text-shadow: 0 0 15px rgba(255, 209, 102, 0.8); margin-bottom: 15px; }
+        .subtitle { font-size: 1.8rem; color: #b0c4de; font-weight: 300; }
+        .stars-section { margin: 60px 0; padding: 40px; background: rgba(0, 20, 50, 0.3); border-radius: 20px; border: 1px solid rgba(255, 209, 102, 0.2); backdrop-filter: blur(10px); }
+        .section-title { font-size: 2.5rem; color: #ffd166; margin-bottom: 40px; text-align: center; }
+        .stars-container { display: flex; justify-content: center; flex-wrap: wrap; gap: 40px; margin: 40px 0; }
+        .star-item { width: 150px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+        .star-icon { font-size: 60px; color: #ffd166; margin-bottom: 15px; filter: drop-shadow(0 0 10px currentColor); }
+        .star-name { font-size: 1.5rem; color: #ffd166; font-weight: 600; margin-bottom: 8px; }
+        .star-blessing { font-size: 1.2rem; color: #e6f7ff; line-height: 1.4; }
+        .blessing-card { background: rgba(0, 20, 50, 0.4); border: 1px solid rgba(255, 209, 102, 0.2); border-radius: 20px; padding: 40px; margin: 30px 0; backdrop-filter: blur(10px); }
+        .card-title { font-size: 2rem; color: #ffd166; margin-bottom: 20px; text-align: center; }
+        .card-content { font-size: 1.5rem; line-height: 1.8; color: #e6f7ff; text-align: center; }
+        .highlight { color: #ffd166; font-weight: 600; }
+        .final-section { margin: 70px 0; text-align: center; padding: 40px; }
+        .final-title { font-size: 2.8rem; color: #ffd166; margin-bottom: 30px; }
+        .final-message { font-size: 1.8rem; color: #ffd166; line-height: 1.6; max-width: 800px; margin: 0 auto 30px; padding: 30px; background: rgba(0, 20, 50, 0.4); border-radius: 20px; border: 1px solid rgba(255, 209, 102, 0.2); }
+        .signature { font-size: 1.5rem; color: #b0c4de; font-style: italic; }
         @media (max-width: 768px) {
-            .main-container {
-                padding: 20px 15px;
-            }
-            
-            .header {
-                padding: 30px 15px;
-                margin-bottom: 40px;
-            }
-            
-            .main-title {
-                font-size: 2.8rem;
-            }
-            
-            .subtitle {
-                font-size: 1.5rem;
-            }
-            
-            .stars-section {
-                padding: 40px 20px;
-                margin: 40px 0;
-            }
-            
-            .section-title {
-                font-size: 2.2rem;
-                margin-bottom: 30px;
-            }
-            
-            .stars-container {
-                gap: 30px;
-                margin: 40px 0;
-            }
-            
-            .star-item {
-                width: 130px;
-                height: 130px;
-            }
-            
-            .star-icon {
-                font-size: 50px;
-                margin-bottom: 15px;
-            }
-            
-            .star-name {
-                font-size: 1.4rem;
-            }
-            
-            .star-blessing {
-                font-size: 1.1rem;
-            }
-            
-            .blessing-card {
-                padding: 30px 20px;
-                margin: 30px 0;
-            }
-            
-            .card-title {
-                font-size: 2rem;
-            }
-            
-            .card-content {
-                font-size: 1.3rem;
-                line-height: 1.8;
-            }
-            
-            .final-section {
-                padding: 50px 20px;
-                margin: 60px 0;
-            }
-            
-            .final-title {
-                font-size: 2.5rem;
-            }
-            
-            .final-message {
-                font-size: 1.6rem;
-                padding: 30px 20px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .stars-container {
-                flex-direction: column;
-                align-items: center;
-                gap: 40px;
-            }
-            
-            .star-item {
-                width: 200px;
-                height: 200px;
-            }
-        }
-        
-        /* 滚动动画 */
-        .fade-in {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s ease;
-        }
-        
-        .fade-in.visible {
-            opacity: 1;
-            transform: translateY(0);
+            .title { font-size: 2.5rem; }
+            .subtitle { font-size: 1.4rem; }
+            .section-title { font-size: 2rem; }
+            .stars-container { gap: 30px; }
+            .star-item { width: 120px; }
+            .star-icon { font-size: 45px; }
+            .card-content, .final-message { font-size: 1.3rem; }
         }
     </style>
 </head>
 <body>
-    <!-- 星空背景 -->
     <canvas id="starsCanvas"></canvas>
-    <div class="nebula nebula-1"></div>
-    <div class="nebula nebula-2"></div>
-    <div class="nebula nebula-3"></div>
-    
-    <!-- 烟花效果 -->
     <canvas id="fireworksCanvas"></canvas>
     
-    <!-- 主内容 -->
-    <div class="main-container">
-        <!-- 标题区域 -->
-        <header class="header fade-in">
-            <h1 class="main-title">✨ 五颗星的祝福 ✨</h1>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">✨ 五颗星的祝福 ✨</h1>
             <div class="subtitle">星光璀璨 · 新年新愿 · 祝福永恒</div>
         </header>
         
-        <!-- 五颗星祝福区域 -->
-        <section class="stars-section fade-in">
+        <section class="stars-section">
             <h2 class="section-title">⭐ 五颗星的祝福 ⭐</h2>
-            
             <div class="stars-container">
-                <!-- 健康星 -->
-                <div class="star-item">
-                    <i class="fas fa-star star-icon" style="color: #ff6b6b;"></i>
-                    <div class="star-name">健康星</div>
-                    <div class="star-blessing">身体健康，活力无限</div>
-                </div>
-                
-                <!-- 快乐星 -->
-                <div class="star-item">
-                    <i class="fas fa-star star-icon" style="color: #ffd166;"></i>
-                    <div class="star-name">快乐星</div>
-                    <div class="star-blessing">笑口常开，幸福满满</div>
-                </div>
-                
-                <!-- 成功星 -->
-                <div class="star-item">
-                    <i class="fas fa-star star-icon" style="color: #06d6a0;"></i>
-                    <div class="star-name">成功星</div>
-                    <div class="star-blessing">事业有成，梦想成真</div>
-                </div>
-                
-                <!-- 财富星 -->
-                <div class="star-item">
-                    <i class="fas fa-star star-icon" style="color: #118ab2;"></i>
-                    <div class="star-name">财富星</div>
-                    <div class="star-blessing">财源广进，富足安康</div>
-                </div>
-                
-                <!-- 平安星 -->
-                <div class="star-item">
-                    <i class="fas fa-star star-icon" style="color: #c77dff;"></i>
-                    <div class="star-name">平安星</div>
-                    <div class="star-blessing">岁岁平安，万事顺遂</div>
-                </div>
+                <div class="star-item"><i class="fas fa-star star-icon" style="color:#ff6b6b;"></i><div class="star-name">健康星</div><div class="star-blessing">身体健康，活力无限</div></div>
+                <div class="star-item"><i class="fas fa-star star-icon" style="color:#ffd166;"></i><div class="star-name">快乐星</div><div class="star-blessing">笑口常开，幸福满满</div></div>
+                <div class="star-item"><i class="fas fa-star star-icon" style="color:#06d6a0;"></i><div class="star-name">成功星</div><div class="star-blessing">事业有成，梦想成真</div></div>
+                <div class="star-item"><i class="fas fa-star star-icon" style="color:#118ab2;"></i><div class="star-name">财富星</div><div class="star-blessing">财源广进，富足安康</div></div>
+                <div class="star-item"><i class="fas fa-star star-icon" style="color:#c77dff;"></i><div class="star-name">平安星</div><div class="star-blessing">岁岁平安，万事顺遂</div></div>
             </div>
-            
-            <div class="card-content" style="margin-top: 40px;">
-                <p>五颗五角星，在星空中为你闪耀</p>
-                <p>每一颗都承载着特别的祝福</p>
-                <p class="highlight">愿这些星光永远照亮你的道路</p>
-            </div>
+            <div class="card-content">五颗五角星，在星空中为你闪耀，每一颗都承载着特别的祝福，愿这些星光永远照亮你的道路。</div>
         </section>
         
-        <!-- 祝福卡片区域 -->
-        <section class="blessings-section">
-            <!-- 新年祝福 -->
-            <div class="blessing-card fade-in">
-                <h3 class="card-title">🎉 新年祝福 🎉</h3>
-                <div class="card-content">
-                    <p>在这辞旧迎新的美好时刻</p>
-                    <p>五颗星为你带来最真挚的祝福</p>
-                    <p>愿所有的美好都向你汇聚</p>
-                    <p>愿所有的幸运都与你相伴</p>
-                    <p class="highlight">五颗星，新年快乐！</p>
-                </div>
-            </div>
-            
-            <!-- 真挚祝愿 -->
-            <div class="blessing-card fade-in">
-                <h3 class="card-title">🎊 真挚祝愿 🎊</h3>
-                <div class="card-content">
-                    <p>五颗星，五重祝福</p>
-                    <p>愿新的一年里，你的生活如诗如画</p>
-                    <p>愿每一天都充满阳光与欢笑</p>
-                    <p>愿每一个梦想都能触及星辰</p>
-                    <p>愿所有的努力都能开花结果</p>
-                    <p class="highlight">五颗星，万事顺遂！</p>
-                </div>
-            </div>
-            
-            <!-- 烟花祝福 -->
-            <div class="blessing-card fade-in">
-                <h3 class="card-title">🎇 烟花祝福 🎇</h3>
-                <div class="card-content">
-                    <p>看这夜空中绚烂的烟花</p>
-                    <p>每一朵绽放都是五颗星对你的祝福</p>
-                    <p>愿你的生活如烟花般绚烂多彩</p>
-                    <p>愿你的笑容如星光般灿烂永恒</p>
-                    <p class="highlight">五颗星，新年璀璨！</p>
-                </div>
-            </div>
-        </section>
+        <div class="blessing-card">
+            <h3 class="card-title">🎉 新年祝福 🎉</h3>
+            <div class="card-content">在这辞旧迎新的美好时刻，五颗星为你带来最真挚的祝福。愿所有的美好都向你汇聚，愿所有的幸运都与你相伴。<span class="highlight">五颗星，新年快乐！</span></div>
+        </div>
         
-        <!-- 最终祝福区域 -->
-        <section class="final-section fade-in">
+        <div class="blessing-card">
+            <h3 class="card-title">🎊 真挚祝愿 🎊</h3>
+            <div class="card-content">五颗星，五重祝福。愿新的一年里，你的生活如诗如画，每一天都充满阳光与欢笑，每一个梦想都能触及星辰，所有的努力都能开花结果。<span class="highlight">五颗星，万事顺遂！</span></div>
+        </div>
+        
+        <div class="blessing-card">
+            <h3 class="card-title">🎇 烟花祝福 🎇</h3>
+            <div class="card-content">看这夜空中绚烂的烟花，每一朵绽放都是五颗星对你的祝福。愿你的生活如烟花般绚烂多彩，愿你的笑容如星光般灿烂永恒。<span class="highlight">五颗星，新年璀璨！</span></div>
+        </div>
+        
+        <section class="final-section">
             <h2 class="final-title">💫 永恒祝福 💫</h2>
-            <div class="final-message">
-                <p>时间流转，季节更替</p>
-                <p>但五颗星的祝福永恒，心意长存</p>
-                <p>感谢相遇，感恩相知</p>
-                <p class="highlight">五颗星，愿你永远被世界温柔以待</p>
-                <p>新年快乐，平安喜乐！</p>
-            </div>
-            <div class="signature">
-                —— 来自五颗星的真诚祝福
-            </div>
+            <div class="final-message">时间流转，季节更替，但五颗星的祝福永恒，心意长存。感谢相遇，感恩相知。<span class="highlight">五颗星，愿你永远被世界温柔以待。</span>新年快乐，平安喜乐！</div>
+            <div class="signature">—— 来自五颗星的真诚祝福</div>
         </section>
     </div>
     
     <script>
-        // 创建星空背景
-        function createStars() {
-            const canvas = document.getElementById('starsCanvas');
-            const ctx = canvas.getContext('2d');
-            
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            
-            const stars = [];
-            const starCount = 400;
-            
-            // 创建星星
-            for (let i = 0; i < starCount; i++) {
-                stars.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    radius: Math.random() * 1.5 + 0.5,
-                    alpha: Math.random() * 0.7 + 0.3,
-                    speed: Math.random() * 0.15 + 0.1,
-                    twinkleSpeed: Math.random() * 0.02 + 0.01
-                });
-            }
-            
-            // 绘制星星
-            function drawStars() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                
-                // 绘制深色背景
-                ctx.fillStyle = '#0a0a2a';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                
-                for (const star of stars) {
-                    // 绘制星星本体
-                    ctx.beginPath();
-                    ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-                    
-                    // 创建渐变效果
-                    const gradient = ctx.createRadialGradient(
-                        star.x, star.y, 0,
-                        star.x, star.y, star.radius * 3
-                    );
-                    gradient.addColorStop(0, `rgba(255, 255, 255, ${star.alpha})`);
-                    gradient.addColorStop(0.5, `rgba(255, 255, 255, ${star.alpha * 0.5})`);
-                    gradient.addColorStop(1, `rgba(255, 255, 255, 0)`);
-                    
-                    ctx.fillStyle = gradient;
-                    ctx.fill();
-                    
-                    // 闪烁效果
-                    star.alpha += star.twinkleSpeed;
-                    if (star.alpha > 0.9 || star.alpha < 0.3) {
-                        star.twinkleSpeed = -star.twinkleSpeed;
-                    }
-                    
-                    // 星星缓慢移动
-                    star.x -= star.speed;
-                    if (star.x < -20) {
-                        star.x = canvas.width + 20;
-                        star.y = Math.random() * canvas.height;
-                    }
-                }
-                
-                requestAnimationFrame(drawStars);
-            }
-            
-            drawStars();
-            
-            // 窗口大小改变时重置
-            window.addEventListener('resize', () => {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
+        // 星空背景
+        const starsCanvas = document.getElementById('starsCanvas');
+        const starsCtx = starsCanvas.getContext('2d');
+        starsCanvas.width = window.innerWidth;
+        starsCanvas.height = window.innerHeight;
+        const stars = [];
+        for (let i = 0; i < 200; i++) {
+            stars.push({
+                x: Math.random() * starsCanvas.width,
+                y: Math.random() * starsCanvas.height,
+                radius: Math.random() * 1.2 + 0.5,
+                alpha: Math.random() * 0.7 + 0.3,
+                twinkleSpeed: Math.random() * 0.02 + 0.01
             });
         }
-        
-        // 创建烟花效果
-        function createFireworks() {
-            const canvas = document.getElementById('fireworksCanvas');
-            const ctx = canvas.getContext('2d');
-            
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            
-            const fireworks = [];
-            const particles = [];
-            const colors = [
-                '#ff6b6b', '#ffd166', '#06d6a0', '#118ab2', '#c77dff',
-                '#ff9a00', '#4cc9f0', '#f72585', '#7209b7', '#3a0ca3'
-            ];
-            
-            class Firework {
-                constructor(x, y, isSpecial = false) {
-                    this.x = x;
-                    this.y = y;
-                    this.velocity = {
-                        x: Math.random() * 6 - 3,
-                        y: Math.random() * -8 - 5
-                    };
-                    this.gravity = 0.12;
-                    this.color = colors[Math.floor(Math.random() * colors.length)];
-                    this.size = isSpecial ? 4 : 2.5;
-                    this.alpha = 1;
-                    this.exploded = false;
-                    this.isSpecial = isSpecial;
-                    this.trail = [];
-                }
-                
-                update() {
-                    // 记录轨迹
-                    this.trail.push({x: this.x, y: this.y});
-                    if (this.trail.length > 8) this.trail.shift();
-                    
-                    this.velocity.y += this.gravity;
-                    this.x += this.velocity.x;
-                    this.y += this.velocity.y;
-                    
-                    if (this.velocity.y >= 0 && !this.exploded) {
-                        this.explode();
-                        this.exploded = true;
-                    }
-                    
-                    this.alpha -= this.isSpecial ? 0.008 : 0.012;
-                }
-                
-                explode() {
-                    const particleCount = this.isSpecial ? 120 : 70 + Math.random() * 30;
-                    
-                    for (let i = 0; i < particleCount; i++) {
-                        const particle = new Particle(
-                            this.x,
-                            this.y,
-                            this.color,
-                            this.isSpecial
-                        );
-                        particles.push(particle);
-                    }
-                }
-                
-                draw(ctx) {
-                    ctx.save();
-                    
-                    // 绘制轨迹
-                    if (this.trail.length > 1) {
-                        ctx.beginPath();
-                        ctx.moveTo(this.trail[0].x, this.trail[0].y);
-                        for (let i = 1; i < this.trail.length; i++) {
-                            ctx.lineTo(this.trail[i].x, this.trail[i].y);
-                        }
-                        ctx.strokeStyle = this.color;
-                        ctx.lineWidth = 1.2;
-                        ctx.globalAlpha = 0.4;
-                        ctx.stroke();
-                    }
-                    
-                    // 绘制烟花主体
-                    ctx.globalAlpha = this.alpha;
-                    ctx.fillStyle = this.color;
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    ctx.fill();
-                    
-                    // 添加光晕效果
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size * 4, 0, Math.PI * 2);
-                    ctx.fillStyle = this.color;
-                    ctx.globalAlpha = this.alpha * 0.15;
-                    ctx.fill();
-                    
-                    ctx.restore();
-                }
-            }
-            
-            class Particle {
-                constructor(x, y, color, isSpecial = false) {
-                    this.x = x;
-                    this.y = y;
-                    this.color = color;
-                    this.velocity = {
-                        x: Math.random() * 8 - 4,
-                        y: Math.random() * 8 - 4
-                    };
-                    this.size = isSpecial ? Math.random() * 3 + 1 : Math.random() * 2 + 0.5;
-                    this.alpha = 1;
-                    this.gravity = 0.15;
-                    this.decay = Math.random() * 0.04 + 0.02;
-                    this.friction = 0.96;
-                    this.wind = Math.random() * 0.2 - 0.1;
-                }
-                
-                update() {
-                    this.velocity.x *= this.friction;
-                    this.velocity.y *= this.friction;
-                    this.velocity.x += this.wind;
-                    this.velocity.y += this.gravity;
-                    this.x += this.velocity.x;
-                    this.y += this.velocity.y;
-                    this.alpha -= this.decay;
-                    this.size -= 0.03;
-                }
-                
-                draw(ctx) {
-                    ctx.save();
-                    ctx.globalAlpha = this.alpha;
-                    ctx.fillStyle = this.color;
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    ctx.fill();
-                    
-                    // 添加光晕效果
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size * 2, 0, Math.PI * 2);
-                    ctx.fillStyle = this.color;
-                    ctx.globalAlpha = this.alpha * 0.3;
-                    ctx.fill();
-                    
-                    ctx.restore();
-                }
-            }
-            
-            function animate() {
-                // 使用半透明黑色覆盖，创建拖尾效果
-                ctx.fillStyle = 'rgba(10, 10, 42, 0.1)';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                
-                // 随机发射烟花
-                if (Math.random() < 0.06 && fireworks.length < 8) {
-                    const x = Math.random() * canvas.width;
-                    const y = canvas.height;
-                    const isSpecial = Math.random() < 0.2;
-                    fireworks.push(new Firework(x, y, isSpecial));
-                }
-                
-                // 更新和绘制烟花
-                for (let i = fireworks.length - 1; i >= 0; i--) {
-                    fireworks[i].update();
-                    fireworks[i].draw(ctx);
-                    
-                    if (fireworks[i].alpha <= 0) {
-                        fireworks.splice(i, 1);
-                    }
-                }
-                
-                // 更新和绘制粒子
-                for (let i = particles.length - 1; i >= 0; i--) {
-                    particles[i].update();
-                    particles[i].draw(ctx);
-                    
-                    if (particles[i].alpha <= 0 || particles[i].size <= 0) {
-                        particles.splice(i, 1);
-                    }
-                }
-                
-                requestAnimationFrame(animate);
-            }
-            
-            animate();
-            
-            // 窗口大小改变时重置
-            window.addEventListener('resize', () => {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
+        function drawStars() {
+            starsCtx.clearRect(0, 0, starsCanvas.width, starsCanvas.height);
+            starsCtx.fillStyle = '#0a0a2a';
+            starsCtx.fillRect(0, 0, starsCanvas.width, starsCanvas.height);
+            stars.forEach(star => {
+                star.alpha += star.twinkleSpeed;
+                if (star.alpha > 0.9 || star.alpha < 0.3) star.twinkleSpeed = -star.twinkleSpeed;
+                const gradient = starsCtx.createRadialGradient(star.x, star.y, 0, star.x, star.y, star.radius * 3);
+                gradient.addColorStop(0, `rgba(255, 255, 255, ${star.alpha})`);
+                gradient.addColorStop(1, `rgba(255, 255, 255, 0)`);
+                starsCtx.fillStyle = gradient;
+                starsCtx.beginPath();
+                starsCtx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                starsCtx.fill();
             });
+            requestAnimationFrame(drawStars);
+        }
+        drawStars();
+        
+        // 烟花效果
+        const fireworksCanvas = document.getElementById('fireworksCanvas');
+        const ctx = fireworksCanvas.getContext('2d');
+        fireworksCanvas.width = window.innerWidth;
+        fireworksCanvas.height = window.innerHeight;
+        const fireworks = [], particles = [];
+        const colors = ['#ff6b6b','#ffd166','#06d6a0','#118ab2','#c77dff','#ff9a00','#4cc9f0'];
+        
+        class Firework {
+            constructor(x, y) {
+                this.x = x; this.y = y;
+                this.velocity = { x: Math.random() * 6 - 3, y: Math.random() * -8 - 5 };
+                this.gravity = 0.12; this.color = colors[Math.floor(Math.random() * colors.length)];
+                this.size = 3; this.alpha = 1; this.exploded = false;
+            }
+            update() {
+                this.velocity.y += this.gravity;
+                this.x += this.velocity.x; this.y += this.velocity.y;
+                if (this.velocity.y >= 0 && !this.exploded) {
+                    for (let i = 0; i < 80 + Math.random() * 40; i++) {
+                        particles.push(new Particle(this.x, this.y, this.color));
+                    }
+                    this.exploded = true;
+                }
+                this.alpha -= 0.01;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
         }
         
-        // 滚动动画效果
-        function initScrollAnimation() {
-            const fadeElements = document.querySelectorAll('.fade-in');
+        class   类 Particle {
+            constructor(x, y, color) {
+                this.x = x; this.y = y; this.color = color;
+                this.velocity = { x: Math.random() * 8 - 4, y: Math.random() * 8 - 4 };
+                this.size = Math.random() * 2 + 1; this.alpha = 1;
+                this.gravity = 0.15; this.decay = Math.random() * 0.03 + 0.02;
+            }
+            update() {
+                this.velocity.y += this.gravity;
+                this.x += this.velocity.x; this.y += this.velocity.y;
+                this.alpha -= this.decay; this.size -= 0.02;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+        
+        function animateFireworks() {
+            ctx.fillStyle = 'rgba(10, 10, 42, 0.1)';
+            ctx.fillRect(0, 0, fireworksCanvas.width, fireworksCanvas.height);
             
-            function checkScroll() {
-                fadeElements.forEach(element => {
-                    const elementTop = element.getBoundingClientRect().top;
-                    const windowHeight = window.innerHeight;
-                    
-                    if (elementTop < windowHeight * 0.85) {
-                        element.classList.add('visible');
-                    }
-                });
+            if (Math.random() < 0.06 && fireworks.length < 8) {
+                fireworks.push(new Firework(Math.random() * fireworksCanvas.width, fireworksCanvas.height));
             }
             
-            // 初始检查
-            checkScroll();
+            for (let i = fireworks.length - 1; i >= 0; i--) {
+                fireworks[i].update(); fireworks[i].draw();
+                if (fireworks[i].alpha <= 0) fireworks.splice(i, 1);
+            }
             
-            // 滚动时检查
-            window.addEventListener('scroll', checkScroll);
+            for (let i = particles.length - 1; i >= 0; i--) {
+                particles[i].update(); particles[i].draw();
+                if (particles[i].alpha <= 0 || particles[i].size <= 0) particles.splice(i, 1);
+            }
+            
+            requestAnimationFrame(animateFireworks);
         }
+        animateFireworks();
         
-        // 初始化
-        document.addEventListener('DOMContentLoaded', () => {文件中。addEventListener('DOMContentLoaded'   “DOMContentLoaded”内, () => {
-            // 创建星空背景
-            createStars();
-            
-            // 创建烟花效果
-            createFireworks();
-            
-            // 初始化滚动动画
-            initScrollAnimation();
-            
-            console.log('五颗星的祝福页面已加载完成！');
+        window.addEventListener('resize', () => {
+            starsCanvas.width = fireworksCanvas.width = window.innerWidth;
+            starsCanvas.height = fireworksCanvas.height = window.innerHeight;
         });
     </script>   < / script>
 </body>   < / body>
